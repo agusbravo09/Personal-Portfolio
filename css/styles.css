@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Workbench:SCAN@-25&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+@import url('animations.css');
+
+body{
+    font-family: 'Roboto', sans-serif;
+}
+.navbar{
+    font-family: "Kanit", sans-serif;
+}
+#particles-js{
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(../img/coding-background.jpeg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: -100;
+}
+.presentation{
+    color: white;
+    text-align: center;
+}
+.p-content{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    padding: 28px;
+}
+.p-content{
+    background-color: rgba(255, 255, 255, 0);
+}
+.p-content h3{
+    font-size: 25px;
+}
+.p-content h1{
+    font-family: "Kanit", sans-serif;
+    font-size: 34px;
+    color: rgb(0, 119, 255);
+}
+.p-image{
+    margin-top: 15px;
+    height: 230px;
+    width: 230px;
+    animation: floating 3s infinite;
+}
+.scroll-down {
+    opacity: 1;
+    -webkit-transition: all .5s ease-in 3s;
+    transition: all .5s ease-in 3s;
+}  
+.scroll-down {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    margin-left: -16px;
+    display: block;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #FFF;
+    background-size: 14px auto;
+    border-radius: 50%;
+    z-index: 2;
+    -webkit-animation: bounce 2s infinite 2s;
+    animation: bounce 2s infinite;
+    -webkit-transition: all .2s ease-in;
+    transition: all .2s ease-in;
+}
+.scroll-down:before {
+    position: absolute;
+    top: calc(50% - 8px);
+    left: calc(50% - 6px);
+    transform: rotate(-45deg);
+    display: block;
+    width: 12px;
+    height: 12px;
+    content: "";
+    border: 2px solid white;
+    border-width: 0px 0 2px 2px;
+}
+.about-me{
+    text-align: center;
+    padding: 80px 10px;
+    /*background-color: red;*/
+}
+.ab-text h2{
+    font-family: 'Workbench', sans-serif;
+    font-size: 30px;
+    text-decoration: underline blue;
+}
+.ab-text{
+    margin-top: 5rem;
+    padding: 25px;
+}
+.underline {
+    height: 4px;
+    width: 90px;
+    background-color: #2d5fff;
+    margin-top: 0;
+    padding-top: 4px;
+    margin-bottom: 5px;
+}
+
+
+
+@media (max-width: 768px){
+    .underline {
+        display: none;
+    }
+}
