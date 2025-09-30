@@ -1,4 +1,3 @@
-// Navegación responsive
 document.addEventListener('DOMContentLoaded', function() {
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
@@ -6,8 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (navToggle) {
         navToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
-            
-            // Animación del ícono hamburguesa
             const bars = document.querySelectorAll('.bar');
             if (navMenu.classList.contains('active')) {
                 bars[0].style.transform = 'rotate(-45deg) translate(-5px, 6px)';
@@ -21,13 +18,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Cerrar menú al hacer clic en un enlace
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
             navMenu.classList.remove('active');
-            
-            // Restaurar ícono hamburguesa
             const bars = document.querySelectorAll('.bar');
             bars[0].style.transform = 'none';
             bars[1].style.opacity = '1';
@@ -35,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Cambiar estilo de la barra de navegación al hacer scroll
     window.addEventListener('scroll', function() {
         const navbar = document.querySelector('.navbar');
         if (window.scrollY > 50) {
@@ -47,11 +40,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Efecto de máquina de escribir para el subtítulo
     function initTypingEffect() {
         const typingElement = document.getElementById('typing-text');
         const texts = [
-            'Desarrollador Backend Jr.',
+            'Desarrollador Backend',
             'Estudiante de Sistemas',
             'También me dicen Coffee ☕'
         ];
@@ -67,40 +59,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentText = texts[textIndex];
             
             if (isDeleting) {
-                // Eliminar caracteres
                 typingElement.textContent = currentText.substring(0, charIndex - 1);
                 charIndex--;
                 typingSpeed = deletingSpeed;
             } else {
-                // Escribir caracteres
                 typingElement.textContent = currentText.substring(0, charIndex + 1);
                 charIndex++;
                 typingSpeed = 100;
             }
             
-            // Cambiar entre escribir y eliminar
             if (!isDeleting && charIndex === currentText.length) {
-                // Pausa al completar la palabra
                 isDeleting = true;
                 typingSpeed = pauseTime;
             } else if (isDeleting && charIndex === 0) {
-                // Cambiar a la siguiente palabra
                 isDeleting = false;
                 textIndex = (textIndex + 1) % texts.length;
-                typingSpeed = 500; // Pausa antes de empezar a escribir
+                typingSpeed = 500;
             }
             
             setTimeout(type, typingSpeed);
         }
         
-        // Iniciar el efecto después de un pequeño delay
         setTimeout(type, 1000);
     }
     
-    // Inicializar el efecto de tipeo
     initTypingEffect();
     
-    // Animación de elementos al hacer scroll
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -109,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Añadir clase de animación basada en la posición
                 if (entry.target.classList.contains('tech-item') || 
                     entry.target.classList.contains('project-card') ||
                     entry.target.classList.contains('detail-item') ||
@@ -125,51 +108,93 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }, observerOptions);
     
-    // Observar elementos para animación
     const animateElements = document.querySelectorAll('.tech-item, .project-card, .timeline-item, .detail-item, .contact-item');
     animateElements.forEach(element => {
         observer.observe(element);
     });
     
-    // Observar secciones para efectos parallax
-    const sections = document.querySelectorAll('section');
-    const sectionObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, { threshold: 0.1 });
     
-    sections.forEach(section => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(20px)';
-        section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-        sectionObserver.observe(section);
-    });
-    
-    // Formulario de contacto
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Aquí normalmente enviarías el formulario a un servidor
-            // Por ahora, solo mostraremos una alerta
-            alert('¡Gracias por tu mensaje! Te responderé a la brevedad.');
-            contactForm.reset();
+            if (!validateForm()) {
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const formStatus = document.getElementById('form-status');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            
+            formStatus.className = 'form-status loading';
+            formStatus.textContent = 'Enviando tu mensaje...';
+            formStatus.style.display = 'block';
+            
+            try {
+                const formData = new FormData(this);
+                formData.append('botcheck', '');
+                
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    formStatus.className = 'form-status success';
+                    formStatus.innerHTML = '¡Mensaje enviado con éxito! Te responderé a la brevedad.';
+                    contactForm.reset();
+                    clearErrors();
+                } else {
+                    throw new Error(result.message || 'Error al enviar el mensaje');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                formStatus.className = 'form-status error';
+                formStatus.innerHTML = 'Hubo un error al enviar el mensaje. Por favor, intentá nuevamente o contactame directamente por LinkedIn.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Hablemos';
+                
+                setTimeout(() => {
+                    formStatus.style.display = 'none';
+                }, 5000);
+            }
         });
+        
+        const emailInput = document.getElementById('email');
+        if (emailInput) {
+            emailInput.addEventListener('blur', validateEmail);
+            emailInput.addEventListener('input', function() {
+                clearEmailError();
+            });
+        }
+        
+        const nameInput = document.getElementById('name');
+        if (nameInput) {
+            nameInput.addEventListener('blur', validateName);
+            nameInput.addEventListener('input', function() {
+                clearNameError();
+            });
+        }
+        
+        const messageInput = document.getElementById('message');
+        if (messageInput) {
+            messageInput.addEventListener('blur', validateMessage);
+            messageInput.addEventListener('input', function() {
+                clearMessageError();
+            });
+        }
     }
     
-    // Efecto de escritura para el código
-    const codeLines = document.querySelectorAll('.code-line');
-    codeLines.forEach((line, index) => {
-        // La animación ya está definida en CSS
-        // Aquí podríamos agregar funcionalidad adicional si es necesario
-    });
-    
-    // Smooth scroll para enlaces internos
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -187,7 +212,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Efecto de partículas para el fondo del hero
     function createParticles() {
         const hero = document.querySelector('.hero');
         const particlesContainer = document.createElement('div');
@@ -220,12 +244,10 @@ document.addEventListener('DOMContentLoaded', function() {
         hero.appendChild(particlesContainer);
     }
     
-    // Crear partículas si el usuario no está en un dispositivo móvil
     if (window.innerWidth > 768) {
         createParticles();
     }
     
-    // Efecto de brillo en elementos interactivos
     const interactiveElements = document.querySelectorAll('.btn, .tech-item, .project-card, .social-link');
     interactiveElements.forEach(element => {
         element.addEventListener('mouseenter', function() {
@@ -239,7 +261,123 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 
-// Añadir estilos para las partículas y animaciones adicionales
+function validateForm() {
+    const isNameValid = validateName();
+    const isEmailValid = validateEmail();
+    const isMessageValid = validateMessage();
+    
+    return isNameValid && isEmailValid && isMessageValid;
+}
+
+function validateEmail() {
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('email-error');
+    const email = emailInput.value.trim();
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (!email) {
+        showError(emailInput, emailError, 'El email es requerido');
+        return false;
+    }
+    
+    if (!emailRegex.test(email)) {
+        showError(emailInput, emailError, 'Por favor, ingresá un email válido');
+        return false;
+    }
+    
+    clearError(emailInput, emailError);
+    return true;
+}
+
+function validateName() {
+    const nameInput = document.getElementById('name');
+    const nameError = document.getElementById('name-error');
+    const name = nameInput.value.trim();
+    
+    if (!name) {
+        showError(nameInput, nameError, 'El nombre es requerido');
+        return false;
+    }
+    
+    if (name.length < 2) {
+        showError(nameInput, nameError, 'El nombre debe tener al menos 2 caracteres');
+        return false;
+    }
+    
+    clearError(nameInput, nameError);
+    return true;
+}
+
+function validateMessage() {
+    const messageInput = document.getElementById('message');
+    const messageError = document.getElementById('message-error');
+    const message = messageInput.value.trim();
+    
+    if (!message) {
+        showError(messageInput, messageError, 'El mensaje es requerido');
+        return false;
+    }
+    
+    if (message.length < 10) {
+        showError(messageInput, messageError, 'El mensaje debe tener al menos 10 caracteres');
+        return false;
+    }
+    
+    clearError(messageInput, messageError);
+    return true;
+}
+
+function showError(input, errorElement, message) {
+    if (!input || !errorElement) return;
+    
+    input.classList.add('input-error');
+    errorElement.textContent = message;
+}
+
+function clearError(input, errorElement) {
+    if (!input || !errorElement) return;
+    
+    input.classList.remove('input-error');
+    errorElement.textContent = '';
+}
+
+function clearErrors() {
+    const errorMessages = document.querySelectorAll('.error-message');
+    const inputs = document.querySelectorAll('input, textarea');
+    
+    errorMessages.forEach(error => {
+        if (error) error.textContent = '';
+    });
+    inputs.forEach(input => {
+        if (input) input.classList.remove('input-error');
+    });
+}
+
+function clearEmailError() {
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('email-error');
+    if (emailInput && emailError) {
+        clearError(emailInput, emailError);
+    }
+}
+
+function clearNameError() {
+    const nameInput = document.getElementById('name');
+    const nameError = document.getElementById('name-error');
+    if (nameInput && nameError) {
+        clearError(nameInput, nameError);
+    }
+}
+
+function clearMessageError() {
+    const messageInput = document.getElementById('message');
+    const messageError = document.getElementById('message-error');
+    if (messageInput && messageError) {
+        clearError(messageInput, messageError);
+    }
+}
+
 const style = document.createElement('style');
 style.textContent = `
     @keyframes float {
@@ -273,6 +411,15 @@ style.textContent = `
     
     .glow-effect {
         animation: glow 2s ease-in-out infinite;
+    }
+    
+    .fa-spinner {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 `;
 document.head.appendChild(style);
