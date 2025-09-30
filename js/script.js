@@ -1,8 +1,64 @@
-document.addEventListener('DOMContentLoaded', function() {
+// Load non-critical CSS asynchronously
+function loadNonCriticalCSS() {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'css/styles.css';
+    link.media = 'print';
+    link.onload = function() {
+        this.media = 'all';
+        document.body.classList.add('inter-font-loaded');
+    };
+    document.head.appendChild(link);
+}
+
+// Defer non-critical functionality
+function deferNonCritical() {
+    // Load particles only on desktop and after main content
+    if (window.innerWidth > 768) {
+        setTimeout(createParticles, 2000);
+    }
+    
+    // Initialize intersection observer for non-critical elements
+    initIntersectionObserver();
+}
+
+// Optimize scroll events
+let scrollTimeout;
+function optimizedScrollHandler() {
+    if (!scrollTimeout) {
+        scrollTimeout = setTimeout(function() {
+            const navbar = document.querySelector('.navbar');
+            if (navbar && window.scrollY > 50) {
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+                navbar.style.background = 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%)';
+            } else if (navbar) {
+                navbar.style.boxShadow = 'none';
+                navbar.style.background = 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)';
+            }
+            scrollTimeout = null;
+        }, 10);
+    }
+}
+
+// Initialize critical functions
+function initCriticalFunctions() {
+    initNavToggle();
+    initTypingEffect();
+    initSmoothScroll();
+    
+    // Defer non-critical functions
+    setTimeout(deferNonCritical, 1000);
+    
+    // Optimize scroll listener
+    window.addEventListener('scroll', optimizedScrollHandler, { passive: true });
+}
+
+// Initialize navigation toggle
+function initNavToggle() {
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
     
-    if (navToggle) {
+    if (navToggle && navMenu) {
         navToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
             const bars = document.querySelectorAll('.bar');
@@ -18,50 +74,49 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Close mobile menu when clicking on links
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
-            navMenu.classList.remove('active');
-            const bars = document.querySelectorAll('.bar');
-            bars[0].style.transform = 'none';
-            bars[1].style.opacity = '1';
-            bars[2].style.transform = 'none';
+            if (navMenu) {
+                navMenu.classList.remove('active');
+                const bars = document.querySelectorAll('.bar');
+                bars[0].style.transform = 'none';
+                bars[1].style.opacity = '1';
+                bars[2].style.transform = 'none';
+            }
         });
     });
+}
+
+// Optimize typing effect with requestAnimationFrame
+function initTypingEffect() {
+    const typingElement = document.getElementById('typing-text');
+    if (!typingElement) return;
     
-    window.addEventListener('scroll', function() {
-        const navbar = document.querySelector('.navbar');
-        if (window.scrollY > 50) {
-            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
-            navbar.style.background = 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%)';
-        } else {
-            navbar.style.boxShadow = 'none';
-            navbar.style.background = 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)';
-        }
-    });
+    let lastTime = 0;
+    const texts = [
+        'Desarrollador Backend',
+        'Estudiante de Sistemas',
+        'También me dicen Coffee ☕'
+    ];
     
-    function initTypingEffect() {
-        const typingElement = document.getElementById('typing-text');
-        const texts = [
-            'Desarrollador Backend',
-            'Estudiante de Sistemas',
-            'También me dicen Coffee ☕'
-        ];
+    let textIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let typingSpeed = 100;
+    
+    function type(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        const delta = timestamp - lastTime;
         
-        let textIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let typingSpeed = 100;
-        let deletingSpeed = 50;
-        let pauseTime = 2000;
-        
-        function type() {
+        if (delta > typingSpeed) {
             const currentText = texts[textIndex];
             
             if (isDeleting) {
                 typingElement.textContent = currentText.substring(0, charIndex - 1);
                 charIndex--;
-                typingSpeed = deletingSpeed;
+                typingSpeed = 50;
             } else {
                 typingElement.textContent = currentText.substring(0, charIndex + 1);
                 charIndex++;
@@ -70,21 +125,45 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!isDeleting && charIndex === currentText.length) {
                 isDeleting = true;
-                typingSpeed = pauseTime;
+                typingSpeed = 2000; // Pause at end
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 textIndex = (textIndex + 1) % texts.length;
                 typingSpeed = 500;
             }
             
-            setTimeout(type, typingSpeed);
+            lastTime = timestamp;
         }
         
-        setTimeout(type, 1000);
+        requestAnimationFrame(type);
     }
     
-    initTypingEffect();
-    
+    // Start with a delay
+    setTimeout(() => requestAnimationFrame(type), 1000);
+}
+
+// Initialize smooth scroll
+function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 70,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+
+// Initialize intersection observer for animations
+function initIntersectionObserver() {
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -112,8 +191,10 @@ document.addEventListener('DOMContentLoaded', function() {
     animateElements.forEach(element => {
         observer.observe(element);
     });
-    
-    
+}
+
+// Contact form functionality
+function initContactForm() {
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', async function(e) {
@@ -170,6 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // Form validation events
         const emailInput = document.getElementById('email');
         if (emailInput) {
             emailInput.addEventListener('blur', validateEmail);
@@ -194,60 +276,48 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+}
+
+// Particles animation (deferred)
+function createParticles() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
     
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                window.scrollTo({
-                    top: targetElement.offsetTop - 70,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
+    // Check if particles already exist
+    if (document.querySelector('.particles')) return;
     
-    function createParticles() {
-        const hero = document.querySelector('.hero');
-        const particlesContainer = document.createElement('div');
-        particlesContainer.className = 'particles';
-        particlesContainer.style.position = 'absolute';
-        particlesContainer.style.top = '0';
-        particlesContainer.style.left = '0';
-        particlesContainer.style.width = '100%';
-        particlesContainer.style.height = '100%';
-        particlesContainer.style.overflow = 'hidden';
-        particlesContainer.style.zIndex = '0';
-        particlesContainer.style.pointerEvents = 'none';
-        
-        for (let i = 0; i < 25; i++) {
-            const particle = document.createElement('div');
-            const size = Math.random() * 4 + 1;
-            particle.style.position = 'absolute';
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            particle.style.backgroundColor = 'rgba(14, 165, 233, 0.4)';
-            particle.style.borderRadius = '50%';
-            particle.style.top = Math.random() * 100 + '%';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animation = `float ${Math.random() * 15 + 10}s linear infinite`;
-            particle.style.animationDelay = Math.random() * 5 + 's';
-            particle.style.filter = 'blur(1px)';
-            particlesContainer.appendChild(particle);
-        }
-        
-        hero.appendChild(particlesContainer);
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles';
+    particlesContainer.style.position = 'absolute';
+    particlesContainer.style.top = '0';
+    particlesContainer.style.left = '0';
+    particlesContainer.style.width = '100%';
+    particlesContainer.style.height = '100%';
+    particlesContainer.style.overflow = 'hidden';
+    particlesContainer.style.zIndex = '0';
+    particlesContainer.style.pointerEvents = 'none';
+    
+    for (let i = 0; i < 25; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 4 + 1;
+        particle.style.position = 'absolute';
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.backgroundColor = 'rgba(14, 165, 233, 0.4)';
+        particle.style.borderRadius = '50%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animation = `float ${Math.random() * 15 + 10}s linear infinite`;
+        particle.style.animationDelay = Math.random() * 5 + 's';
+        particle.style.filter = 'blur(1px)';
+        particlesContainer.appendChild(particle);
     }
     
-    if (window.innerWidth > 768) {
-        createParticles();
-    }
-    
+    hero.appendChild(particlesContainer);
+}
+
+// Interactive elements hover effects
+function initInteractiveElements() {
     const interactiveElements = document.querySelectorAll('.btn, .tech-item, .project-card, .social-link');
     interactiveElements.forEach(element => {
         element.addEventListener('mouseenter', function() {
@@ -258,9 +328,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.filter = 'brightness(1)';
         });
     });
-    
-});
+}
 
+// Form validation functions
 function validateForm() {
     const isNameValid = validateName();
     const isEmailValid = validateEmail();
@@ -378,6 +448,26 @@ function clearMessageError() {
     }
 }
 
+// Initialize contact form after DOM is ready
+function initContactFormDeferred() {
+    setTimeout(initContactForm, 1000);
+    setTimeout(initInteractiveElements, 1500);
+}
+
+// Main initialization with optimized loading
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        loadNonCriticalCSS();
+        initCriticalFunctions();
+        initContactFormDeferred();
+    });
+} else {
+    loadNonCriticalCSS();
+    initCriticalFunctions();
+    initContactFormDeferred();
+}
+
+// Add CSS animations dynamically
 const style = document.createElement('style');
 style.textContent = `
     @keyframes float {

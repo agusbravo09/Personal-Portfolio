@@ -32,7 +32,7 @@
       "@type": "Person",
       "name": "Agustín Bravo",
       "jobTitle": "Desarrollador Backend",
-      "url": "https://agusbravo.dev",
+      "url": "https://agusbravoportafolios.vercel.app/",
       "sameAs": [
         "https://www.linkedin.com/in/agusbravo/",
         "https://github.com/agusbravo09"
@@ -48,10 +48,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="css/styles.css">
+    </noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="canonical" href="https://agusbravo.dev">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+    <link rel="canonical" href="https://agusbravoportafolios.vercel.app/">
 </head>
 
 <body>
@@ -139,7 +146,7 @@
                 <div class="profile-container">
                     <div class="profile-image">
                         <img src="https://i.ibb.co/xq81Gcrv/profile-pic.png" alt="Agustín Bravo" width="300"
-                            height="300">
+                            height="300" loading="lazy">
                     </div>
                     <div class="profile-content">
                         <h3>Agustín Bravo</h3>
@@ -322,7 +329,8 @@
             <div class="projects-grid">
                 <div class="project-card">
                     <div class="project-image">
-                        <img src="https://i.ibb.co/ymzH6rwM/servtec.png" alt="ServTec - Dashboard" class="project-img">
+                        <img src="https://i.ibb.co/ymzH6rwM/servtec.png" alt="ServTec - Dashboard" class="project-img"
+                            loading="lazy">
                         <div class="project-overlay">
                             <span class="project-status">En Producción</span>
                         </div>
@@ -334,7 +342,8 @@
                             consultar el estado de sus equipos y aceptar/rechazar presupuestos. Los administradores
                             pueden gestionar clientes, equipos, presupuestos, repuestos y trabajos realizados.
                             <br><br>
-                            Este sistema permitió centralizar procesos que antes se llevaban en planillas, reduciendo errores
+                            Este sistema permitió centralizar procesos que antes se llevaban en planillas, reduciendo
+                            errores
                             en presupuestos y mejorando la comunicación con clientes
                         </p>
                         <div class="project-features">
@@ -380,7 +389,7 @@
                 <div class="project-card">
                     <div class="project-image">
                         <img src="https://i.ibb.co/jPjpc77b/cuentax.png" alt="CuentaX - App Financiera"
-                            class="project-img">
+                            class="project-img" loading="lazy">
                         <div class="project-overlay">
                             <span class="project-status">En Producción</span>
                         </div>
@@ -392,7 +401,8 @@
                             Permite registrar ingresos y egresos. Su objetivo es simplificar la gestión del dinero
                             cotidiano. <br> <br>
                             CuentaX facilita la organización financiera diaria, permitiendo a los usuarios registrar sus
-                            movimientos de forma simple. Su arquitectura modular está pensada para crecer con nuevas funcionalidades
+                            movimientos de forma simple. Su arquitectura modular está pensada para crecer con nuevas
+                            funcionalidades
                             como reportes automáticos y análisis de métricas
                         </p>
                         <div class="project-features">
